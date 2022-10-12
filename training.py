@@ -34,7 +34,6 @@ for intent in intents['intents']:
             classes.append(intent['value'])
 
 words = sorted(set(words))
-
 classes = sorted(set(classes))
 
 pickle.dump(words, open('words.pkl', 'wb'))
@@ -57,22 +56,25 @@ for document in documents:
 random.shuffle(training)
 training = np.array(training)
 
+# Split data
 train_x = list(training[:, 0])
 train_y = list(training[:, 1])
 
-# Model
+# Create model
 model = Sequential()
 model.add(Dense(128, input_shape=(len(train_x[0]),), activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(len(train_y[0]), activation='softmax'))
-
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9)
+
+# Compile model
 model.compile(loss='categorical_crossentropy',
               optimizer=sgd, metrics=['accuracy'])
 
+# Fit model
 hist = model.fit(np.array(train_x), np.array(train_y),
                  epochs=200, batch_size=5, verbose=1)
 model.save('chatbotmodel.h5', hist)
-print("Done")
+model.summary()
