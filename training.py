@@ -67,6 +67,8 @@ model.add(Dropout(0.5))
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(len(train_y[0]), activation='softmax'))
+
+# Optimizer
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9)
 
 # Compile model

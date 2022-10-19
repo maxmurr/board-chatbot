@@ -32,9 +32,8 @@ line_bot_api = LineBotApi(
 handler = WebhookHandler('10dac3b4ec6908672de01ec31d5f7743')
 userId = "U0c537ff4217faf7fcf64b6c4b78b212f"
 
+
 # Webhook
-
-
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -62,6 +61,7 @@ classes = pickle.load(open('classes.pkl', 'rb'))
 model = load_model('chatbotmodel.h5')
 
 
+# clean up sentence from user
 def clean_up_sentence(sentence):
     sentence_words = word_tokenize(
         sentence, engine="deepcut", keep_whitespace=False)
@@ -69,6 +69,7 @@ def clean_up_sentence(sentence):
     return sentence_words
 
 
+# create bag of words
 def bag_of_words(sentence):
     sentence_words = clean_up_sentence(sentence)
     bag = [0] * len(words)
