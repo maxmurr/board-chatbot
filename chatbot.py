@@ -126,8 +126,8 @@ def handle_message(event):
         try:
             line_bot_api.push_message(
                 userId, TextSendMessage(text=res2))
-        except:  # noqa
-            pass
+        except:
+            print("Error")
 
 
 if __name__ == "__main__":
