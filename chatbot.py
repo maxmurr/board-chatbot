@@ -18,6 +18,8 @@ import json
 import random
 from multiprocessing.sharedctypes import Value
 from keras.models import load_model
+from linebot import LineBotApi
+from linebot.models import TextSendMessage
 
 
 warnings.filterwarnings('ignore')
@@ -28,6 +30,7 @@ app = Flask(__name__)
 line_bot_api = LineBotApi(
     'FvqCc79VbcwRk6LHHEzRyYjGbeTU0eT2MgzoIkYDdOY6IUlnMaySVczF6GTgKuBRQUuNrfU9wOMDr5V9rzQ+0KnABieuDNqVlF5cLGFZlWkrV0eZbsHSRU+6PhXKe9idPoxYxK7LeNFL5lRCbWEPmQdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('10dac3b4ec6908672de01ec31d5f7743')
+userId = "U0c537ff4217faf7fcf64b6c4b78b212f"
 
 # Webhook
 
@@ -99,14 +102,32 @@ def get_response(intents_list, intents_json):
     return result
 
 
+def get_response2(intents_list, intents_json):
+    value = intents_list[0]['intent']
+    list_of_intents = intents_json['intents']
+    for i in list_of_intents:
+        if i['value'] == value:
+            result2 = i['responses2'][0]
+            break
+    return result2
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     message = event.message.text
     ints = predict_class(message)
     res = get_response(ints, intents)
+    res2 = get_response2(ints, intents)
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=res))
+
+    if res2 != None:
+        try:
+            line_bot_api.push_message(
+                userId, TextSendMessage(text=res2))
+        except:  # noqa
+            pass
 
 
 if __name__ == "__main__":
