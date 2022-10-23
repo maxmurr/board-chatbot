@@ -1,3 +1,6 @@
+from re import M
+import warnings
+from matplotlib import pyplot as plt
 import random
 import json
 import pickle
@@ -10,8 +13,7 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import SGD
 
 from pythainlp import word_tokenize
-
-import warnings
+from sklearn.model_selection import train_test_split
 warnings.filterwarnings('ignore')
 
 
@@ -57,16 +59,18 @@ random.shuffle(training)
 training = np.array(training)
 
 # Split data
-train_x = list(training[:, 0])
-train_y = list(training[:, 1])
+x = list(training[:, 0])
+y = list(training[:, 1])
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, test_size=0.33, random_state=42)
 
 # Create model
 model = Sequential()
-model.add(Dense(128, input_shape=(len(train_x[0]),), activation='relu'))
+model.add(Dense(128, input_shape=(len(x_train[0]),), activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(len(train_y[0]), activation='softmax'))
+model.add(Dense(len(y_train[0]), activation='softmax'))
 
 # Optimizer
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9)
@@ -76,10 +80,40 @@ model.compile(loss='categorical_crossentropy',
               optimizer=sgd, metrics=['accuracy'])
 
 # Fit model
-hist = model.fit(np.array(train_x), np.array(train_y),
-                 epochs=200, batch_size=5, verbose=1)
+hist = model.fit(np.array(x_train), np.array(y_train),
+                 epochs=30, batch_size=5, verbose=1 , validation_data=(np.array(x_test), np.array(y_test)))
 model.save('chatbotmodel.h5', hist)
 model.summary()
 
+
 # Evaluate the model
-model.evaluate(train_x, train_y, verbose=1)
+train_results = model.evaluate(x_train, y_train, verbose=1)
+print("train loss, train acc:", train_results)
+
+test_results = model.evaluate(x_test, y_test, verbose=1, batch_size=256)
+print("test loss, test acc:", test_results)
+
+# print(hist.history.keys())
+# print(plt.get_backend())
+
+# xpoints = np.array([1, 8])
+# ypoints = np.array([3, 10])
+
+# plt.plot(xpoints, ypoints)
+# plt.show(block=True)
+
+# summarize hist for accuracy
+# plt.plot(hist.history['accuracy'])
+# plt.title('model accuracy')
+# plt.ylabel('accuracy')
+# plt.xlabel('epoch')
+# plt.legend(['train', 'test'], loc='upper left')
+# plt.show()
+
+# # summarize hist for loss
+# plt.plot(hist.history['loss'])
+# plt.title('model loss')
+# plt.ylabel('loss')
+# plt.xlabel('epoch')
+# plt.legend(['train', 'test'], loc='upper left')
+# plt.show()
