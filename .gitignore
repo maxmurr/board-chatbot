@@ -3,3 +3,6 @@
 /vars
 /.env
 /chatbot_model.model
+/words.pkl
+/classes.pkl
+/chatbotmodel.h5
