@@ -7,6 +7,7 @@ import numpy as np
 
 from nltk.stem import WordNetLemmatizer
 
+import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import SGD
@@ -90,6 +91,8 @@ print("train loss, train acc:", train_results)
 
 test_results = model.evaluate(x_test, y_test, verbose=1)
 print("test loss, test acc:", test_results)
+
+print(tf.__version__)
 
 # summarize hist for accuracy
 # plt.plot(hist.history['accuracy'])
