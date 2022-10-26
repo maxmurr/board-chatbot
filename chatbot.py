@@ -65,7 +65,7 @@ model = load_model('chatbotmodel.h5')
 def clean_up_sentence(sentence):
     sentence_words = word_tokenize(
         sentence, engine="deepcut", keep_whitespace=False)
-    sentence_words = [lemmatizer.lemmatize(word) for word in sentence_words]
+    # sentence_words = [lemmatizer.lemmatize(word) for word in sentence_words]
     return sentence_words
 
 
@@ -103,14 +103,14 @@ def get_response(intents_list, intents_json):
     return result
 
 
-def get_response2(intents_list, intents_json):
-    value = intents_list[0]['intent']
-    list_of_intents = intents_json['intents']
-    for i in list_of_intents:
-        if i['value'] == value:
-            result2 = i['responses2'][0]
-            break
-    return result2
+# def get_response2(intents_list, intents_json):
+#     value = intents_list[0]['intent']
+#     list_of_intents = intents_json['intents']
+#     for i in list_of_intents:
+#         if i['value'] == value:
+#             result2 = i['responses2'][0]
+#             break
+#     return result2
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -118,17 +118,22 @@ def handle_message(event):
     message = event.message.text
     ints = predict_class(message)
     res = get_response(ints, intents)
-    res2 = get_response2(ints, intents)
-    line_bot_api.reply_message(
+    # res2 = get_response2(ints, intents)
+    if res == " ปัญหานี้อยู่ในความรับผิดชอบของฝ่าย สำนักทรัพย์สิน เราจะดำเนินการส่งข้อร้องเรียนไปยังหน่วยงานที่เกี่ยวข้อง ขอบคุณที่แจ้งปัญหาเข้ามา"or res == " ปัญหานี้อยู่ในความรับผิดชอบของฝ่าย สำนักบริการคอมพิวเตอร์ เราจะดำเนินการส่งข้อร้องเรียนไปยังหน่วยงานที่เกี่ยวข้อง ขอบคุณที่แจ้งปัญหาเข้ามา หรือจะติดต่อสำนักบริการคอมพิวเตอร์ โดยตรงได้ที่ FACEBOOK | www.ocs.ku.ac.th | LINE@: @GQV5600M | HELPDESK 025620952-6 ต่อ 622541-43" or res == " ปัญหานี้อยู่ในความรับผิดชอบของฝ่าย สำนักกีฬา เราจะดำเนินการส่งข้อร้องเรียนไปยังหน่วยงานที่เกี่ยวข้อง ขอบคุณที่แจ้งปัญหาเข้ามา" or res == " ปัญหานี้อยู่ในความรับผิดชอบของฝ่าย สำนักการศึกษา เราจะดำเนินการส่งข้อร้องเรียนไปยังหน่วยงานที่เกี่ยวข้อง ขอบคุณที่แจ้งปัญหาเข้ามา หรือจะติดต่อ สำนักการศึกษา โดยตรงได้ที่ https://www.facebook.com/kuregistrar ในการติดต่อ สบศ. โปรดแจ้งรหัสนิสิต ชื่อ-นามสกุล และอีเมล KU-Google ทุกครั้งที่ติดต่อด้วยนะคะ" or res == " ปัญหานี้อยู่ในความรับผิดชอบของฝ่าย กองกิจการนิสิต เราจะดำเนินการส่งข้อร้องเรียนไปยังหน่วยงานที่เกี่ยวข้อง ขอบคุณที่แจ้งปัญหาเข้ามา หรือจะติดต่อ กองกิจการนิสิต และติดตามข้อมูลข่าวสารโดยตรงได้ที่  https://www.facebook.com/SAKUkasetsart" or res == " ปัญหานี้อยู่ในความรับผิดชอบของฝ่าย กองยานพาหนะ อาคารและ สถานที่ เราจะดำเนินการส่งข้อร้องเรียนไปยังหน่วยงานที่เกี่ยวข้อง ขอบคุณที่แจ้งปัญหาเข้ามา หรือจะติดต่อ กองยานพาหนะ อาคารและ สถานที่ โดยตรงได้ที่ vehicle.ku.ac.th" or res == " ปัญหานี้อยู่ในความรับผิดชอบของฝ่าย Happy Place Center เราจะดำเนินการส่งข้อร้องเรียนไปยังหน่วยงานที่เกี่ยวข้อง ขอบคุณที่แจ้งปัญหาเข้ามา หรือจะติดต่อ Happy Place Center โดยตรงได้ที่ https://www.facebook.com/KUHappyPlaceCenter":
+        line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text="ปัญหา " + message + res))
+    else:
+        line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=res))
 
-    if res2 != None:
-        try:
-            line_bot_api.push_message(
-                userId, TextSendMessage(text=res2))
-        except:
-            print("Error")
+    # if res2 != None:
+    #     try:
+    #         line_bot_api.push_message(
+    #             userId, TextSendMessage(text=res2))
+    #     except:
+    #         print("Error")
 
 
 if __name__ == "__main__":
